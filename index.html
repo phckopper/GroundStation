@@ -1,10 +1,69 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
-    <title>Three.js</title>
+    <title>Photon</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./css/photon.css">
+
+    <!-- Electron Javascript -->
+    <script src="app.js" charset="utf-8"></script>
   </head>
+
   <body>
+    <!-- Wrap your entire app inside .window -->
+    <div class="window">
+      <!-- .toolbar-header sits at the top of your app
+      <header class="toolbar toolbar-header">
+        <h1 class="title">Ground Station - alpha</h1>
+      </header>
+       -->
+
+      <!-- Your app's content goes inside .window-content -->
+      <div class="window-content">
+        <div class="pane-group">
+          <div class="pane-sm sidebar">
+            <nav class="nav-group">
+              <h5 class="nav-group-title">Ground Station</h5>
+              <a class="nav-group-item active">
+                <span class="icon icon-home"></span>
+                Home
+              </a>
+              <span class="nav-group-item">
+                <span class="icon icon-direction"></span>
+                Flight
+              </span>
+              <span class="nav-group-item">
+                <span class="icon icon-chart-line"></span>
+                Graphs
+              </span>
+              <span class="nav-group-item">
+                <span class="icon icon-compass"></span>
+                Positioning
+              </span>
+              <span class="nav-group-item">
+                <span class="icon icon-gauge"></span>
+                Performance
+              </span>
+
+              <span class="nav-group-item">
+                <span class="icon icon-cog"></span>
+                Configurations
+              </span>
+              <span class="nav-group-item">
+                <span class="icon icon-info"></span>
+                Info
+              </span>
+            </nav>
+          </div>
+          <div class="pane">
+            <div class="padded-more">
+              <h1>Hey</h1>
+              <div id="canvas"></div>
+            </div>
+          </div>
+        </div>
+    </div>
   </body>
   <script type="text/javascript">
       var THREE = require('three');
@@ -18,7 +77,7 @@
       function init() {
 
         camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
-        camera.position.z = 1;
+        camera.position.z = 0.85;
 
         scene = new THREE.Scene();
 
@@ -30,7 +89,7 @@
 
         renderer = new THREE.WebGLRenderer( { antialias: true } );
         renderer.setSize( window.innerWidth, window.innerHeight );
-        document.body.appendChild( renderer.domElement );
+        document.getElementById('canvas').appendChild( renderer.domElement );
 
       }
 
