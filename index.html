@@ -5,9 +5,7 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="./css/photon.css">
-
-    <!-- Electron Javascript -->
-    <script src="app.js" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="./node_modules/switchery/switchery.css">
   </head>
 
   <body>
@@ -59,49 +57,14 @@
           <div class="pane">
             <div class="padded-more">
               <h1>Hey</h1>
+              <div>
+                <input type="checkbox" class="js-switch" />
+              </div>
               <div id="canvas"></div>
             </div>
           </div>
         </div>
     </div>
   </body>
-  <script type="text/javascript">
-      var THREE = require('three');
-      
-      var camera, scene, renderer;
-      var geometry, material, mesh;
-
-      init();
-      animate();
-
-      function init() {
-
-        camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
-        camera.position.z = 0.85;
-
-        scene = new THREE.Scene();
-
-        geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
-        material = new THREE.MeshNormalMaterial();
-
-        mesh = new THREE.Mesh( geometry, material );
-        scene.add( mesh );
-
-        renderer = new THREE.WebGLRenderer( { antialias: true } );
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        document.getElementById('canvas').appendChild( renderer.domElement );
-
-      }
-
-      function animate() {
-
-        requestAnimationFrame( animate );
-
-        mesh.rotation.x += 0.01;
-        mesh.rotation.y += 0.02;
-
-        renderer.render( scene, camera );
-
-      }
-    </script>
+  <script src="app.js" charset="utf-8"></script>
 </html>
