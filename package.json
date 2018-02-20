@@ -9,6 +9,7 @@
   "author": "Pedro Henrique Kopper",
   "license": "ISC",
   "dependencies": {
-    "electron": "^1.8.2"
+    "electron": "^1.8.2",
+    "three": "^0.90.0"
   }
 }
