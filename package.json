@@ -4,13 +4,19 @@
   "description": "Drone ground station",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "install": "electron-rebuild"
   },
   "author": "Pedro Henrique Kopper",
   "license": "ISC",
   "dependencies": {
     "electron": "^1.8.2",
+    "serialport": "^6.0.5",
     "switchery": "0.0.2",
     "three": "^0.90.0"
+  },
+  "devDependencies": {
+    "electron-rebuild": "^1.7.3"
   }
 }
