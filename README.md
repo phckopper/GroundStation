@@ -2,7 +2,7 @@
 
 This project is the ground station software in development to be used with my autonomous drones. It's built using Electron and is meant to comunicate with a drone over a RF link through a virtual serial port. This is a refactor of a set of scripts used during the 2017 [MOSTRATEC](http://mostratec.com.br/en).
 
-**Keep in mind this is an experimental software and this repo is meant mostly as a logbook**
+:warning: **Keep in mind this is an experimental software and this repo is meant mostly as a logbook** :warning:
 
 ## Usage
 
