@@ -9,7 +9,7 @@
     "install": "electron-rebuild"
   },
   "author": "Pedro Henrique Kopper",
-  "license": "ISC",
+  "license": "GPL-3.0+",
   "dependencies": {
     "electron": "^1.8.2",
     "serialport": "^6.0.5",
