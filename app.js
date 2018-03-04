@@ -113,6 +113,21 @@ myMAV.on("ready", function() {
   });
 });
 
+setInterval(function() {
+  myMAV.createMessage("HEARTBEAT", {
+      'type': 0,
+      'autopilot': 0,
+      'base_mode': 0,
+      'custom_mode': 0,
+      'system_status': 0,
+      'mavlink_version': 1
+    },
+    function(message) {
+      console.log("writing message");
+      serialport.write(message.buffer);
+    });
+}, 1000);
+
 document.getElementById("send-message").addEventListener("click", function(e) {
   myMAV.createMessage("MANUAL_CONTROL", {
       'target': 1,
