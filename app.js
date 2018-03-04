@@ -131,7 +131,7 @@ setInterval(function() {
 document.getElementById("send-message").addEventListener("click", function(e) {
   myMAV.createMessage("MANUAL_CONTROL", {
       'target': 1,
-      'x': 100,
+      'x': 0,
       'y': 0,
       'z': 0,
       'r': 0,
@@ -141,6 +141,28 @@ document.getElementById("send-message").addEventListener("click", function(e) {
       console.log("writing message");
       serialport.write(message.buffer);
     });
+});
+
+document.getElementById("throttle-slider").addEventListener("change", function(e) {
+  console.log(e);
+  myMAV.createMessage("MANUAL_CONTROL", {
+      'target': 1,
+      'x': 0,
+      'y': 0,
+      'z': e.srcElement.value,
+      'r': 0,
+      'buttons': 0
+    },
+    function(message) {
+      console.log(message);
+      console.log("writing message");
+      serialport.write(message.buffer);
+    });
+});
+window.addEventListener("gamepadconnected", function(e) {
+  console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+    e.gamepad.index, e.gamepad.id,
+    e.gamepad.buttons.length, e.gamepad.axes.length);
 });
 /*
 parser.on('data', function(data) {
