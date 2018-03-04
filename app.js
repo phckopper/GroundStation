@@ -87,30 +87,44 @@ const SerialPort = require('serialport');
 var serialPortsEl = document.getElementById('serial-ports');
 SerialPort.list(function(err, ports) {
   for (var i = 0; i < ports.length; i++) {
-    var li = document.createElement('li');
-    li.appendChild(document.createTextNode(ports[i].comName));
-    serialPortsEl.appendChild(li);
+    //var li = document.createElement('li');
+    //li.appendChild(document.createTextNode(ports[i].comName));
+    //serialPortsEl.appendChild(li);
   }
 });
 
-const port = SerialPort('/dev/tty.usbmodem1423', {
+const serialport = SerialPort('/dev/tty.usbserial-A50285BI', {
   baudRate: 115200
 });
-const Readline = SerialPort.parsers.Readline;
-const parser = port.pipe(new Readline({ delimiter: '\n' }));
 
+const mavlink = require('mavlink');
+
+var myMAV = new mavlink(1, 100, "v1.0", ["common"]);
+myMAV.on("ready", function() {
+  //parse incoming serial data
+  serialport.on('data', function(data) {
+    myMAV.parse(data);
+    console.log(data);
+  });
+  
+  //listen for messages
+  myMAV.on("message", function(message) {
+    console.log(message);
+  });
+});
+/*
 parser.on('data', function(data) {
   var t = data.split(' ');
-  var x = t[0]/100.0;
-  var y = t[1]/100.0;
+  //var x = t[0]/100.0;
+  //var y = t[1]/100.0;
 
-  mesh.position.x = t[0]/100.0;
-  mesh.position.z = t[1]/100.0; // yes, inverted
+  //mesh.position.x = t[0]/100.0;
+  //mesh.position.z = t[1]/100.0; // yes, inverted
 
-  mesh.rotation.x = parseFloat(t[2]) * Math.PI/180;
-  mesh.rotation.z = parseFloat(t[3]) * Math.PI/180; // yes, inverted
-  mesh.rotation.y = parseFloat(t[4]) * Math.PI/180; // yes, inverted
-  console.log("%s %s", mesh.rotation.x, mesh.rotation.y);
-  console.log(data.toString());
-})
+  mesh.rotation.x = parseFloat(t[0]) * Math.PI/-180;
+  mesh.rotation.z = parseFloat(t[1]) * Math.PI/-180; // yes, inverted
+  mesh.rotation.y = parseFloat(t[2]) * Math.PI/180; // yes, inverted
+  //console.log("%s %s", mesh.rotation.x, mesh.rotation.y);
+  //console.log(data.toString());
+})*/
 

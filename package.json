@@ -12,6 +12,7 @@
   "license": "GPL-3.0+",
   "dependencies": {
     "electron": "^1.8.2",
+    "mavlink": "^1.0.1",
     "serialport": "^6.0.5",
     "switchery": "0.0.2",
     "three": "^0.90.0"
