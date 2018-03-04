@@ -112,6 +112,21 @@ myMAV.on("ready", function() {
     console.log(message);
   });
 });
+
+document.getElementById("send-message").addEventListener("click", function(e) {
+  myMAV.createMessage("MANUAL_CONTROL", {
+      'target': 1,
+      'x': 100,
+      'y': 0,
+      'z': 0,
+      'r': 0,
+      'buttons': 0
+    },
+    function(message) {
+      console.log("writing message");
+      serialport.write(message.buffer);
+    });
+});
 /*
 parser.on('data', function(data) {
   var t = data.split(' ');
