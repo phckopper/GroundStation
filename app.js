@@ -102,14 +102,42 @@ const mavlink = require('mavlink');
 var myMAV = new mavlink(1, 100, "v1.0", ["common"]);
 myMAV.on("ready", function() {
   //parse incoming serial data
-  serialport.on('data', function(data) {
-    myMAV.parse(data);
-    console.log(data);
+  serialport.on('readable', function() {
+    myMAV.parse(serialport.read());
   });
   
   //listen for messages
   myMAV.on("message", function(message) {
     console.log(message);
+  });
+  myMAV.on("checksumFail", function(error) {
+    console.log("checksum error");
+  });
+  myMAV.on("sequenceError", function(error) {
+    console.log("sequence error");
+  });
+
+  myMAV.on("HEARTBEAT", function(message) {
+    console.log("heartbeat");
+  });
+
+  myMAV.on("DISTANCE_SENSOR", function(message) {
+    console.log("distance sensor");
+    let data = myMAV.decodeMessage(message)
+    console.log(data);
+  });
+
+  myMAV.on("VISION_POSITION_ESTIMATE", function(message) {
+    console.log("vision position");
+    let data = myMAV.decodeMessage(message);
+    console.log(data);
+    mesh.position.x = data.x/100.0;
+    mesh.position.z = data.y/100.0; // swap axis
+    mesh.position.y = data.z/100.0;
+
+    mesh.rotation.x = data.pitch * Math.PI/-180;
+    mesh.rotation.z = data.roll * Math.PI/-180; // yes, inverted
+    mesh.rotation.y = data.yaw * Math.PI/180; // yes, inverted
   });
 });
 
@@ -128,42 +156,36 @@ setInterval(function() {
     });
 }, 1000);
 
-document.getElementById("send-message").addEventListener("click", function(e) {
+function sendManualControl(throttle, pitch, roll, yaw) {
+  // args come in as [-1, 1]
+  // expected range is [-1000, 1000]
   myMAV.createMessage("MANUAL_CONTROL", {
       'target': 1,
-      'x': 0,
-      'y': 0,
-      'z': 0,
-      'r': 0,
+      'x': pitch * 200,
+      'y': roll * -200,
+      'z': (throttle + 1) * 500,
+      'r': yaw * -200,
       'buttons': 0
     },
     function(message) {
-      console.log("writing message");
+      //console.log("writing message");
       serialport.write(message.buffer);
     });
-});
-
-document.getElementById("throttle-slider").addEventListener("change", function(e) {
-  console.log(e);
-  myMAV.createMessage("MANUAL_CONTROL", {
-      'target': 1,
-      'x': 0,
-      'y': 0,
-      'z': e.srcElement.value,
-      'r': 0,
-      'buttons': 0
-    },
-    function(message) {
-      console.log(message);
-      console.log("writing message");
-      serialport.write(message.buffer);
-    });
-});
+};
+/*
 window.addEventListener("gamepadconnected", function(e) {
   console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
     e.gamepad.index, e.gamepad.id,
     e.gamepad.buttons.length, e.gamepad.axes.length);
-});
+  window.setInterval(function() {
+    var gp = navigator.getGamepads()[e.gamepad.index];
+      if(gp) {
+        console.log("%.2f %.2f %.2f %.2f", gp.axes[0], gp.axes[1], gp.axes[2], gp.axes[3]);
+        // weird mapping
+        sendManualControl(gp.axes[0], gp.axes[2], gp.axes[1], gp.axes[3]);
+      }
+    }, 100);
+});*/
 /*
 parser.on('data', function(data) {
   var t = data.split(' ');
