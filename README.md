@@ -7,10 +7,10 @@ This project is the ground station software in development to be used with my au
 ## Usage
 
 At the moment this software has only been tested on macOS, however it should work on other platforms. To run you simply need to clone this repo then run: 
-'''javascript
+```javascript
 npm install
 npm start
-'''
+```
 And the application should start in fullscreen right away.
 
 ## Serial protocol and drone firmware
