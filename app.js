@@ -33,9 +33,13 @@ elems.forEach(function(html) {
  */
 
 var THREE = require('three');
+var OrbitControls = require('three-orbit-controls')(THREE);
+var loader = new THREE.JSONLoader();
 
-var camera, scene, renderer;
-var geometry, material, mesh, wall;
+var fs = require('fs');
+
+var camera, scene, renderer, controls;
+var geometry, mesh, wall;
 
 init();
 animate();
@@ -47,22 +51,37 @@ function init() {
   camera.position.z = 6;
   camera.rotation.x = -0.35;
 
+  controls = new OrbitControls( camera );
+  controls.update();
+
   scene = new THREE.Scene();
 
-  geometry = new THREE.BoxGeometry( 0.5, 0.1, 0.5 );
+  //geometry = new THREE.BoxGeometry( 0.5, 0.1, 0.5 );
   material = new THREE.MeshNormalMaterial();
+  console.log(typeof(THREE.JSONLoader))
+  loader.load("models/quad_x.json", function(geometry, materials) {
+    var modelMaterial = new THREE.MeshFaceMaterial(materials);
+    mesh = new THREE.Mesh(geometry, material);
+    mesh.scale.set(0.1, 0.1, 0.1);
+    mesh.position.y = 1.5;
+    scene.add( mesh );
+  });
 
-  mesh = new THREE.Mesh( geometry, material );
-  mesh.position.y = 1.5;
-  scene.add( mesh );
-
-  var floor_material = new THREE.MeshBasicMaterial( {color: 0xaa33aa} );
-  var floor = new THREE.BoxGeometry(10, 0.1, 10);
+  var floor_texture = new THREE.TextureLoader().load( 'textures/grass.jpg' );
+  floor_texture.wrapS = floor_texture.wrapT = THREE.RepeatWrapping;
+  floor_texture.offset.set( 0, 0 );
+  floor_texture.repeat.set( 50, 50 );
+  var floor_material = new THREE.MeshBasicMaterial( { map: floor_texture } );
+  var floor = new THREE.BoxGeometry(100, 0.1, 100);
 
   var floor_mesh = new THREE.Mesh( floor, floor_material );
   scene.add(floor_mesh);
 
-  var wall_material = new THREE.MeshBasicMaterial( {color: 0x3333bb} );
+  var wall_texture = new THREE.TextureLoader().load( 'textures/wall.jpg' );
+  wall_texture.wrapS = wall_texture.wrapT = THREE.RepeatWrapping;
+  wall_texture.offset.set( 1, 5 );
+  //wall_texture.repeat.set( 0, 0 );
+  var wall_material = new THREE.MeshBasicMaterial( { map: wall_texture } );
   var wall_geometry = new THREE.BoxGeometry(1, 5, 0.1);
 
   wall = new THREE.Mesh( wall_geometry, wall_material );
@@ -79,7 +98,7 @@ function init() {
 function animate() {
 
   requestAnimationFrame( animate );
-
+  controls.update();
   renderer.render( scene, camera );
 
 }

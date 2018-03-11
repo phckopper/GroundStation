@@ -15,7 +15,9 @@
     "mavlink": "^1.0.1",
     "serialport": "^6.0.5",
     "switchery": "0.0.2",
-    "three": "^0.90.0"
+    "three": "^0.90.0",
+    "three-json-loader": "^1.0.0",
+    "three-orbit-controls": "^82.1.0"
   },
   "devDependencies": {
     "electron-rebuild": "^1.7.3"
