@@ -35,14 +35,14 @@ elems.forEach(function(html) {
 var THREE = require('three');
 
 var camera, scene, renderer;
-var geometry, material, mesh;
+var geometry, material, mesh, wall;
 
 init();
 animate();
 
 function init() {
 
-  camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
+  camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 30 );
   camera.position.y = 3;
   camera.position.z = 6;
   camera.rotation.x = -0.35;
@@ -60,7 +60,13 @@ function init() {
   var floor = new THREE.BoxGeometry(10, 0.1, 10);
 
   var floor_mesh = new THREE.Mesh( floor, floor_material );
-  scene.add(floor_mesh)
+  scene.add(floor_mesh);
+
+  var wall_material = new THREE.MeshBasicMaterial( {color: 0x3333bb} );
+  var wall_geometry = new THREE.BoxGeometry(1, 5, 0.1);
+
+  wall = new THREE.Mesh( wall_geometry, wall_material );
+  scene.add(wall);
 
   var canvas = document.getElementById('canvas');
 
@@ -94,7 +100,8 @@ SerialPort.list(function(err, ports) {
 });
 
 const serialport = SerialPort('/dev/tty.usbserial-A50285BI', {
-  baudRate: 115200
+  baudRate: 115200,
+  //buffersize: 64
 });
 
 const mavlink = require('mavlink');
@@ -102,8 +109,8 @@ const mavlink = require('mavlink');
 var myMAV = new mavlink(1, 100, "v1.0", ["common"]);
 myMAV.on("ready", function() {
   //parse incoming serial data
-  serialport.on('readable', function() {
-    myMAV.parse(serialport.read());
+  serialport.on('data', function(data) {
+    myMAV.parse(data);
   });
   
   //listen for messages
@@ -123,7 +130,10 @@ myMAV.on("ready", function() {
 
   myMAV.on("DISTANCE_SENSOR", function(message) {
     console.log("distance sensor");
-    let data = myMAV.decodeMessage(message)
+    let data = myMAV.decodeMessage(message);
+    wall.position.z = mesh.position.z - data.current_distance/100.0;
+    wall.position.x = mesh.position.x;
+    wall.rotation.z = mesh.rotation.z;
     console.log(data);
   });
 
@@ -153,10 +163,13 @@ setInterval(function() {
     function(message) {
       console.log("writing message");
       serialport.write(message.buffer);
+      //if(message.length < 64)
+      //  serialport.write((new Array(64 - message.length)).fill(0))
+      serialport.drain();
     });
 }, 1000);
 
-function sendManualControl(throttle, pitch, roll, yaw) {
+function sendManualControl(throttle, pitch, roll, yaw, mode) {
   // args come in as [-1, 1]
   // expected range is [-1000, 1000]
   myMAV.createMessage("MANUAL_CONTROL", {
@@ -165,14 +178,18 @@ function sendManualControl(throttle, pitch, roll, yaw) {
       'y': roll * -200,
       'z': (throttle + 1) * 500,
       'r': yaw * -200,
-      'buttons': 0
+      'buttons': (mode > 0 ? 1 : 0)
     },
     function(message) {
       //console.log("writing message");
+      //console.log(message);
       serialport.write(message.buffer);
+      //if(message.length < 64)
+      //  serialport.write((new Array(64 - message.length)).fill(0))
+      serialport.drain();
     });
 };
-/*
+
 window.addEventListener("gamepadconnected", function(e) {
   console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
     e.gamepad.index, e.gamepad.id,
@@ -180,12 +197,12 @@ window.addEventListener("gamepadconnected", function(e) {
   window.setInterval(function() {
     var gp = navigator.getGamepads()[e.gamepad.index];
       if(gp) {
-        console.log("%.2f %.2f %.2f %.2f", gp.axes[0], gp.axes[1], gp.axes[2], gp.axes[3]);
+        console.log("%.2f %.2f %.2f %.2f %.2f", gp.axes[0], gp.axes[1], gp.axes[2], gp.axes[3], gp.axes[5]);
         // weird mapping
-        sendManualControl(gp.axes[0], gp.axes[2], gp.axes[1], gp.axes[3]);
+        sendManualControl(gp.axes[0], gp.axes[2], gp.axes[1], gp.axes[3], gp.axes[5]);
       }
-    }, 100);
-});*/
+    }, 75);
+});
 /*
 parser.on('data', function(data) {
   var t = data.split(' ');
