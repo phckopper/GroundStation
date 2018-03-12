@@ -46,15 +46,16 @@ animate();
 
 function init() {
 
-  camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 30 );
-  camera.position.y = 3;
-  camera.position.z = 6;
+  camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 100 );
+  camera.position.y = 10;
+  camera.position.z = 25;
   camera.rotation.x = -0.35;
 
   controls = new OrbitControls( camera );
   controls.update();
 
   scene = new THREE.Scene();
+  scene.background = new THREE.Color( 0xaaaaff );
 
   //geometry = new THREE.BoxGeometry( 0.5, 0.1, 0.5 );
   material = new THREE.MeshNormalMaterial();
