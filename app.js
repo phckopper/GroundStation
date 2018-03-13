@@ -127,6 +127,7 @@ const serialport = SerialPort('/dev/tty.usbserial-A50285BI', {
 const mavlink = require('mavlink');
 
 var myMAV = new mavlink(1, 100, "v1.0", ["common"]);
+var walls = [];
 myMAV.on("ready", function() {
   //parse incoming serial data
   serialport.on('data', function(data) {
@@ -154,6 +155,10 @@ myMAV.on("ready", function() {
     wall.position.z = mesh.position.z - data.current_distance/100.0;
     wall.position.x = mesh.position.x;
     wall.rotation.z = mesh.rotation.z;
+
+    var nWall = wall.clone();
+    scene.add(nWall);
+    walls.push(nWall);
     console.log(data);
   });
 
@@ -170,6 +175,12 @@ myMAV.on("ready", function() {
     mesh.rotation.y = data.yaw * Math.PI/180; // yes, inverted
   });
 });
+
+function clearScene() {
+  for (var i = 0; i < walls.length; i++) {
+    scene.remove(walls[i]);
+  }
+}
 
 setInterval(function() {
   myMAV.createMessage("HEARTBEAT", {
